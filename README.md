@@ -81,6 +81,9 @@ We can see our category and explore it:
 ### Budget
 We can do the same configuring a budget
 
+### Cloudtrail
+Cloudtrail is different than Cloudwatch. Cloudtrail is focused on monitoring actions, like who create a bucket, or command executed on CLI.
+
 ## AIM
 The account user is called root user. We can create other users, and group it by permissions. All the information about IAM we can find on [here](https://console.aws.amazon.com/iam/home) or selecting from Services pages:
 
@@ -167,6 +170,10 @@ We need three informations:
 - Default output format - we can digit text, json or table
 
 After this, we can see the configure profile runing command `aws configure list`.
+
+### Usage
+
+Today, a good practice is use a linux EC2 instance to conect to AWS Cli.
 
 ## S3
 Amazon Simple Storage Service [Amazon S3](https://aws.amazon.com/s3/?nc1=h_ls) is an object storage service that offers industry-leading scalability, data availability, security, and performance.  
@@ -373,6 +380,372 @@ scroll down the page and click on edit  on `Transfer acceleration` section:
 Click on `Enable`. We have a new endpoint to do upload:
 
 ![image](images/cloudfront9.png)
+
+
+## EC2
+Elastic Compute Cloud (EC2) is a web service that provides secure, resizable compute capacity in the cloud.
+
+We have some price plannings:
+- On-demand: You pay for compute capacity by the hour or the second depending on which instances you run.
+- Reserved instances or saving plans: is used by contract, and can be 75% less than on-demand price.
+- Spot instances: used for get less prices on-demand
+- Dedicated host: physical server. Can be used to reused server licences
+
+### Understanding kinds of instances
+Prefix names on EC2 instances:
+- C: Compute optimazed
+- G: Graphics. Better video card.
+- D: Dense storage
+- R: Memory optimaze
+- M: General
+- I: High speed storage - Database
+- F: For programming purpose
+- T: Webservers
+- P: GPU - machine learning
+- X: Memory 
+
+### Volumes
+EBS: Elastic block storage, is a virtual disk. To mesure the performance of the volume, Amazon use IOPS, input/output operations per second. Some kinds of EBS:
+- GP2: General purpose SSD. Good price. 3.000 to 10.000 IOPS
+- Provisioned SSD (IO1): high intensitive - Database. 10.000 to 20.000 IOPS
+- ST1 (HDD): Data, log, backup. No boot (no OS)
+- SC1 Cold HDD: Like ST1, more chiper, infrequent access
+- Magnetic (Standard): HDD for infrequent access but accept boot.
+
+### Creating an EC2
+
+Step by step, we can create a new instance, for example windows server. We need to go to EC2 service site and click on `Launch instance` button:
+
+![image](images/ec2_1.png)
+
+We can see that exists 7 steps:
+
+![image](images/ec2_2.png)
+
+Choose the AMI (Amazon Machine Image). We can filter by free tier only and select the desire machine:
+
+![image](images/ec2_3.png)
+
+Select kind of instance type:
+
+![image](images/ec2_4.png)
+
+We can configure some details about instances, like number of instances, network, and so on
+
+![image](images/ec2_5.png)
+
+We can configure storage (EBS) and add more volumes if it is necessary
+
+![image](images/ec2_6.png)
+
+We can add also some tags, that we can use after:
+
+![image](images/ec2_7.png)
+
+We can create a new security group and choose some properties. After this we can launch:
+
+![image](images/ec2_8.png)
+
+The review page:
+
+![image](images/ec2_9.png)
+
+After run, we need to create some keys to access, do download and lanch the instance:
+![image](images/ec2_10.png)
+
+After this, instance is launch:
+![image](images/ec2_11.png)
+
+On list of instances, we can select our instance and connect it:
+
+![image](images/ec2_12.png)
+
+To connect using RDP, we need to generate a password. And for this, we need to use the downloaded key file previously:
+
+![image](images/ec2_13.png)
+
+After play, we can delete (`terminate`) our ec2:
+
+![image](images/ec2_14.png)
+
+And confirm delete:
+
+![image](images/ec2_15.png)
+
+### Creating web server linux instance
+
+Create a new instance selecting Linux and configuring a new policy security:
+
+![image](images/ec2_16.png)
+
+After launch, we can connect it using ssh.
+
+to connect, change access mode to pem file.
+```terminal
+$ sudo chmod 400 linuxwebserver.pem
+```
+
+And connect to using ssh:
+```terminal
+ssh -i linuxwebserver.pem ec2-user@<ec2-url>
+```
+
+To enable server, we can install and add the index.html:
+```terminal
+sudo su
+yum install httpd
+nano /var/wwww/html
+service httpd start
+```
+
+Now, we can access it using our browser.
+
+### Playing with volumes
+When we create a new EC2 instance, we can do a couple of things with the volumes. For example, we can create a snapshot. Basically, it is a copy of the volume at the moment of the creation of snapshot.
+
+We can go to volumes, select the volume and click on create snapshot:
+
+![image](images/ec2_17.png)
+
+We can give a name and finish it:
+
+![image](images/ec2_18.png)
+
+If we go to `Snapshots`, we can `create volume` or `create image` from this snapshot:
+
+![image](images/ec2_19.png)
+
+If we create a volume, we can change from Availability Zone, Size or Volume type:
+
+![image](images/ec2_20.png)
+
+_Note_: to move inter regions, not only Availability Zones, we need to copy the snapshot, on the previous image menu, option `copy`. 
+
+If we want create an image, this image will be able to create new EC2 instances:
+
+![image](images/ec2_21.png)
+
+After create, we can see on `AMIs` section:
+
+![image](images/ec2_22.png)
+
+If we want launch a new EC2 instance we can find this new image on the list of selection:
+
+![image](images/ec2_23.png)
+
+### Adding monitoring
+We can add monitoring to our EC2 instances. We can enable this on creation or after creation on tab `Monitoring`.
+
+We can go to `Cloudwatch` and in `all alarms` menu, we can click on `create alarm` button. First of all we need to select the metric:
+
+![image](images/cloudwatch1.png)
+
+For EC2, select it:
+
+![image](images/cloudwatch2.png)
+
+Select `Per-instance Metrics`:
+
+![image](images/cloudwatch3.png)
+
+And select your instance and metric. In this case, CPU utilization:
+
+![image](images/cloudwatch4.png)
+
+Select the threshold:
+
+![image](images/cloudwatch5.png)
+
+And select SNS topic:
+
+![image](images/cloudwatch6.png)
+
+If the instance get more than 80% of CPU usage for a minute, we will received an email. 
+
+### Using Roles to configure AWS Cli inside EC2 instance
+A good practice is use an EC2 instance to run cli commands. But instead connect using a public key and private key, can be better create a role. 
+
+For this, we can go `IAM` site and click on `Roles` menu. We click on `create role` button:
+
+![image](images/ec2_24.png)
+
+Select `EC2`:
+
+![image](images/ec2_25.png)
+
+Select the desired accesses:
+
+![image](images/ec2_26.png)
+
+And give a name and save:
+
+![image](images/ec2_27.png)
+
+On the instance, we can add without reboot a IAM Role:
+
+![image](images/ec2_28.png)
+
+And select the created role:
+
+![image](images/ec2_29.png)
+
+Now, connecting to the instance, we can run aws cli commands
+
+
+### Bootstrap example
+We can configure an EC2 instance to execute some tasks when create it, like update so, create something, etc
+
+We will add some commands to test it. 
+1. Update SO
+2. install httpd and configure `index.html`
+3. configure to start service when reboot
+4. create a bucket
+5. copy `index.html` into the bucket
+
+For aim this, we create a new EC2 instance. The different parts are in `Step 3: Instance details`. We need to configure the `IAM Role`:
+
+![image](images/ec2_30.png)
+
+And we configure the bootstrap exec instructions:
+
+![image](images/ec2_31.png)
+
+The instructions in text:
+
+```shell
+#! /bin/bash
+yum update -y
+yum install httpd -y
+service httpd start
+chkconfig httpd on
+cd /var/www/html
+echo "<html><h1>site online</h1></html>" > index.html
+aws s3 mb s3://iundarigun-bootstrap-bucket
+aws s3 cp index.html s3://iundarigun-bootstrap-bucket
+```
+
+After this, we have a web server!
+
+### EFS - Elastic File System
+It is the solution to share volumes enter EC2 instances. This approach is not possible with standard volumes EBS.
+
+### Load balancer 
+Three kind of LB in AWS.
+- Application Load Balancer: Http and Https
+- Network Load Balancer: Network Layer (TCP)
+- Classic Load Balancer (or elastic LB): is a legacy Load Balance -> Http/https/tcp
+
+First of all, we need to create a `target group`:
+
+![image](images/target1.png)
+
+Choose a name for this target and instances:
+
+![image](images/target2.png)
+
+And especify the healths:
+
+![image](images/target3.png)
+
+After this, we add instances to target group and click on create:
+
+![image](images/target4.png)
+
+After this, we create a load balancer:
+
+![image](images/loadbalancer1.png)
+
+Select Http/Https type:
+
+![image](images/loadbalancer2.png)
+
+Type a name and select at least two availability zones:
+
+![image](images/loadbalancer3.png)
+
+This advertice is because we doens't select https 
+
+![image](images/loadbalancer4.png)
+
+Select a security group:
+
+![image](images/loadbalancer5.png)
+
+And select the target group create previously:
+
+![image](images/loadbalancer6.png)
+
+After this we can finish and click on create button:
+
+![image](images/loadbalancer7.png)
+
+The Load balancer can delay a couple of minutes to finish and after this we can use a public url:
+
+![image](images/loadbalancer8.png)
+
+### Metadata
+
+Metadata is information that EC2 instance can give to you about it. Information like public ip, security groups, hostname and so on. To access to this information without login on AWS console, we can get it using curl and a standard url: `curl http://169.254.169.254/latest/meta-data`. This curl returns a list of available informations:
+
+![image](images/metadata1.png)
+
+If we want any information, we can invoke the same url with the desire information at the end of the url:
+
+![image](images/metadata2.png)
+
+
+### Autoscaling
+
+We can create policies to autoscaling EC2 instances, to able more or less capacity depends on metrics. 
+
+First of all, we need to create a `Launch configuration`. Go to the site page on EC2, and click on `create Launch configuration` button: 
+
+![image](images/autoscaling1.png)
+
+Give a name and select the AMI and instance type:
+
+![image](images/autoscaling2.png)
+
+Configure the startup script of the machines:
+
+![image](images/autoscaling3.png)
+
+And select the security group:
+
+![image](images/autoscaling4.png)
+
+After this we can create the launch configuration: 
+
+![image](images/autoscaling5.png)
+
+Now, we need to create an `Auto scaling group`:
+
+![image](images/autoscaling6.png)
+
+Give a nane and click on `switch to launch configuration`:
+
+![image](images/autoscaling7.png)
+
+Select the configuration create before and next:
+
+![image](images/autoscaling8.png)
+Select subnets to garantee the servers will be creates on differents availability zones:
+
+![image](images/autoscaling9.png)
+
+Choose time to do health check:
+
+![image](images/autoscaling10.png)
+
+And select the policy to autoscaling, and finish configuration:
+
+![image](images/autoscaling11.png)
+
+We can see the instances created by Scaling group:
+
+![image](images/autoscaling12.png)
+
+When we top the server CPUs, the scaling policy add more machines. And when the CPU average downs less than threshold, scaling policy decrease the number of instances.
 
 ---
 ## References
