@@ -747,6 +747,123 @@ We can see the instances created by Scaling group:
 
 When we top the server CPUs, the scaling policy add more machines. And when the CPU average downs less than threshold, scaling policy decrease the number of instances.
 
+## Database
+
+- Relational databases:
+    - Multi availability zone: Disaster recovery
+    - Read replica: copy database to read
+    - Aurora is an Amazon solution. Faster than other solutions, and chipper than other solutions. It is compatible with MySql and Postgres.
+
+
+- No SQL (DynamoDB):
+    - document-oriented or key-value
+    - SSD and 3 datacenters
+    - configurable for consistent reads (acceptingh delays more than second to get new reads) or for strongly consistent reads (less than a second)
+
+- ElastiCache:
+    - Faster, scalability. It is an in-memory cache system.
+    - Two types: Memcached (objects) and Redis (Key-values and multi AZ)
+
+- Redshift:
+    - Is a warehouse solution for big data
+    - Single node or compute node (128 instances)
+    - It is not multi AZ
+
+### Creating Relational Database (RDS)
+
+To create a relational database, we must to access a RDS page and click on `create database` button:
+
+![image](images/database1.png)
+
+We choose MySQL (we doens't choose `Aurora` because we will create an Aurora later):
+
+![image](images/database2.png)
+
+We choose `Free tier` template, choose a name to database, a username and a password:
+
+![image](images/database3.png)
+
+We let selection of free tier machine:
+
+![image](images/database4.png)
+
+We choose `No public access` on connectivity options:
+
+![image](images/database5.png)
+
+And we choose a name to the database and create it:
+
+![image](images/database6.png)
+
+If you go to details of database, we can get the url of database. We will use it to connect from EC2 instance
+
+![image](images/database7.png)
+
+The important point is about security group. We leave the default security group to database, we need to add this group on EC2 instance.
+
+### Backup
+- Automated: 1 - 35 days - For seconds in S3. It is free.
+- DB Snapshot: Manual
+
+To able Multi-AZ we need to able automatic backup. After this we can click on `modify` button:
+
+![image](images/database11.png)
+
+Select `Create a standby instance` for a multi-AZ deployment.
+
+![image](images/database9.png)
+
+We have an advertice, and we can select a manteinance window to do it or apply immediatly:
+
+![image](images/database10.png)
+
+To create a read replica, we can select the database ansd click actions, `create read replica` menu option:
+
+![image](images/database12.png)
+
+Choose a name and a region and finish:
+
+![image](images/database13.png)
+
+On database details we can see the two databases:
+
+![image](images/database14.png)
+
+### Aurora
+
+Creation of Aurora database is similar than RDS MySQL. Select `create database`, select Aurora and, por example, we can select Postgres compatibility. Select `Provisioned` too:
+
+![image](images/database15.png)
+
+Especify the name of database, username and password, and the size of the machine:
+
+![image](images/database16.png)
+
+Let security group default:
+
+![image](images/database17.png)
+
+Select a name for database, select priority and click on `create database`:
+
+![image](images/database18.png)
+
+After create, we can add a read replica, selecting actions:
+
+![image](images/database19.png)
+
+Select a name and the machine size:
+
+![image](images/database20.png)
+
+And select priority and click on create:
+
+![image](images/database21.png)
+
+The result:
+
+![image](images/database22.png)
+
+
 ---
 ## References
 - https://www.udemy.com/course/certificacao-amazon-aws-2019-solutions-architect
