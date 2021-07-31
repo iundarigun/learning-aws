@@ -863,8 +863,124 @@ The result:
 
 ![image](images/database22.png)
 
+## Route 53
+
+
+
+
+
+## Terraform
+
+Terraform is an open-source infrastructure as code software tool that provides a consistent CLI workflow to manage hundreds of cloud services. It codifies cloud APIs into declarative configuration files. 
+
+Terraform is multicloud, but the same declaration for `AWS` does not work for other cloud providers.
+
+### Installing CLI
+
+Install terraform accessing [terraform.io](https://terraform.io).  **Terraform uses our aws configure cli.**
+
+For convention, we put all terraform files on a folder. We start like this:
+```shell
+$ terraform init
+```
+To run a preview of the files content, we can use the next instruction:
+```shell
+$ terraform plan
+```
+To apply changes, we use this:
+```
+terraform apply
+```
+
+### Terraform files
+
+We have some examples on `terraform` folder. For convention, we declare a `main.tf` with the main declarations, we use `variables.tf` to define variables, and `output.tf` to allow display some informations.
+
+#### Declaring provider
+```terraform
+provider "aws" {
+    region                  = "us-east-1"
+}
+
+provider "aws" {
+    alias                   = "us-east-2" # Alias for different regions
+    region                  = "us-east-2"
+}
+```
+#### Declaring variables
+```terraform
+# Declaring a map
+variable "amis" {
+    type = map
+
+    default = {
+        "us-east-1" = "ami-0c2b8ca1dad447f8a"
+        "us-east-2" = "ami-0443305dabd4be2bc"
+    }
+}
+# Declaring a list
+variable "cdirs_ip6" {
+    type = list
+    default = ["::/0"]
+}
+
+# Declaring a string
+variable "keyname" {
+    type = string
+    default = "terraform-aws"
+}
+```
+To use variables: `var.keyname` or `var.amis["us-east-1"]`
+
+#### Declaring an EC2
+```terraform
+# on this terraform environment, the aws_instance call "dev"
+resource "aws_instance" "dev" { 
+    count = 3 # number of instances
+    ami = var.amis["us-east-1"]
+    instance_type = "t2.micro"
+    key_name = var.keyname
+    tags = {
+        Name = "dev-${count.index}" ## Name of instance
+    }
+    vpc_security_group_ids = ["${aws_security_group.ssh-access.id}"] # Reference to security group id
+}
+```
+we can connect on ec2 instance by `ssh -i ~/.ssh/terraform-aws ec2-user@<Public ip or dns>`
+
+- More configurations for aws: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+
+### Destroy environment
+We can destroy an especific element or we can remove all:
+```
+$ terraform destroy -target aws_instance.dev4
+$ terraform destroy
+```
+
+### Ssh keys
+
+To use some services on AWS, we need to create or configure a ssh key. This key can be imported, so we can generate one and use on all our service, aws or not, and across regions.
+
+To generating key-par:
+```shell
+$ ssh-keygen -f terraform-aws -t rsa
+```
+This instruction generate two files, the private key and the public key. We can move the private key to our `~/.ssh` folder. After this, we can import public key on AWS. We go to `key pair` menu on EC2 and click on action `Import key pair`:
+
+![image](images/terraform1.png)
+
+Give a name and browse the `.pub` file.
+
+![image](images/terraform2.png)
+
+### Terraform cloud
+Terraform in local is not a good idea for a team. We can use `terraform cloud` to manage with a team. We can create an account and create a workspace. 
+
+https://www.terraform.io/cloud
+
 
 ---
 ## References
 - https://www.udemy.com/course/certificacao-amazon-aws-2019-solutions-architect
 - https://aws.amazon.com/free
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs
