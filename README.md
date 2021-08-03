@@ -1,5 +1,12 @@
 # Learning AWS
 
+This readme contains information about my studies in AWS. The menu:
+
+- [Global infrasctructure](#global-infrasctructure)
+- [Account](account)
+- [Terraform](terraform)
+
+
 ## Global infrasctructure
 We can separate the AWS Infrastructure in regions, and inside the region, in availability zones. All availability zone is a kind of `Data Center`. For example, São Paulo is one of this regions, in we have 3 availability zones inside São Paulo's region. (july 2021)
 
@@ -864,10 +871,125 @@ The result:
 ![image](images/database22.png)
 
 ## Route 53
+Amazon Route 53 is a highly available and scalable cloud Domain Name System (DNS) web service. It is designed to give developers and businesses a way to route end users to Internet applications by translating names.
 
+We can apply rules about geolocation (forbiden or allow by location based), failover and so on.
 
+- Simple routing policy: We configure our Route 53 with a group of ips, for example a list of EC2 ips. Any time that anyone asks for the dns, translates for a random of ips configured
+- Weighted routing policy: We can assign percentage for different ips. We create a couple of policies, one for IP and percentage. We can aslo add a health check to discard a route if the endpoint is down
+- Latency routing policy: We can configure route 53 to allow to calculate latency between the request client and the ip machines servers
+- Failover routing policy: We can configure a primary server and a secundary server to allow use secundary as a failover
+- Geolocation routing policy: This policy allow to offer differents contains based on geolocation. We need to configure a enter for all location that we want to consider, and an enter for a default location.
+- Geoproximity routing policy: We can create a complex flow of decisions mixing different metrics, geolocation, failover, latency, etc
+- Multivalue answer routing policy: Is the same of simple routing policy adding health check. For this reason, we need to create an enter for each ip.
 
+## VPC
+Amazon Virtual Private Cloud is a service that lets you launch AWS resources in a logically isolated virtual network that you define.
 
+### Private  Ips v4
+- class A: 10.0.0.0   - 10.255.255.255
+- class B: 172.16.0.0 - 172.31.255.255
+- class C: 192.168.0.0 - 192.168.255.255
+
+The others ips are publics.
+
+### Creating a VPC
+
+We go to create a VPC, using a scenario like this:
+
+![image](images/vpc0.png)
+
+For this, first of all we need to create a new VPC. 
+
+![image](images/vpc1.png)
+
+Select a name and put an ip range:
+
+![image](images/vpc2.png)
+
+After create, we can see that we create automatically a `route table` and a `network ACL`.
+
+![image](images/vpc3.png)
+
+After this, we create a subnet:
+
+![image](images/vpc4.png)
+
+We need to specify the vpc, a name and a ip range:
+
+![image](images/vpc5.png)
+
+If we want to connect with internet, we need to create an `internet gateway`:
+
+![image](images/vpc6.png)
+
+Select a name and create: 
+
+![image](images/vpc7.png)
+
+We can see that is not attached, so we need to `attach to VPC`: 
+
+![image](images/vpc8.png)
+
+Select the VPC: 
+
+![image](images/vpc9.png)
+
+For `route table` that VPC creates automatically, we need to allow comunication with all internet, so we need to edit routes: 
+
+![image](images/vpc10.png)
+
+And add 0.0.0.0 as a destination with target of internet gateway create previously:
+
+![image](images/vpc11.png)
+
+After this, we need to associate subnet to this route table:
+
+![image](images/vpc12.png)
+
+Select the desired subnets:
+
+![image](images/vpc13.png)
+
+And finally, we need to alloy subnet to assign public ip automatically when create something:
+
+![image](images/vpc14.png)
+
+![image](images/vpc15.png)
+
+For the the second subnet, we want a Nat to access to internet to protect the resources into the subnet. For this, we create a `Nat Gateway`: 
+
+![image](images/vpc16.png)
+
+Especify the subnet **with internet access** and select `Allocate Elastic IP`:
+
+![image](images/vpc17.png)
+
+After this, we need to create a new `Route table`:
+
+![image](images/vpc18.png)
+
+Associate it for the VPC:
+
+![image](images/vpc19.png)
+
+And Edit routes to route all internet requisitions to the nat gateway:
+
+![image](images/vpc20.png)
+
+And edit subnets on Route table to add the private subnet:
+
+![image](images/vpc21.png)
+
+### ACL
+
+ACL is a list of rules to allow or deny some actions (ip). It works with priorities, so the first ACL matches, stop to search. For the order, it is used the rule number.
+
+_Note_: Take care with the effimer ports
+
+### VPC Endpoints
+
+An endpoint is a connection between a VPC and a AWS service. This is a good approach to allow secure connections without use internet network.
 
 ## Terraform
 
