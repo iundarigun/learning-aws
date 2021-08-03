@@ -3,9 +3,19 @@
 This readme contains information about my studies in AWS. The menu:
 
 - [Global infrasctructure](#global-infrasctructure)
-- [Account](account)
-- [Terraform](terraform)
+- [Account](#account)
+- [AIM](#aim)
+- [AWS Cli](#aws-cli)
+- [S3](#s3)
+- [CloudFront and CDN](#cloudfront-and-cdn)
+- [EC2](#ec2)
+- [Database](#database)
+- [Route 53](#route-53)
+- [VPC](#vpc)
+- [Terraform](#terraform)
+- [References](#references)
 
+---
 
 ## Global infrasctructure
 We can separate the AWS Infrastructure in regions, and inside the region, in availability zones. All availability zone is a kind of `Data Center`. For example, São Paulo is one of this regions, in we have 3 availability zones inside São Paulo's region. (july 2021)
