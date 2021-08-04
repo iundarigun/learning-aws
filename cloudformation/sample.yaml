@@ -1,0 +1,16 @@
+---
+Resources:
+  WebServers: ## Group - A free name
+    Type: AWS::EC2::Instance 
+    Properties:
+      AvailabilityZone: us-east-1a
+      ImageId: ami-0c2b8ca1dad447f8a 
+      InstanceType: t2.micro
+
+  MyBuckets:
+    Type: AWS::S3::Instance
+    Properties:
+      AccessControl: PublicRead
+      BucketName: "iunda-cloudformation-sample-bucket"
+
+      
