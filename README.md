@@ -12,6 +12,11 @@ This readme contains information about my studies in AWS. The menu:
 - [Database](#database)
 - [Route 53](#route-53)
 - [VPC](#vpc)
+- [SQS and SNS](#sqs-and-sns)
+- [Kinesis](#kinesis)
+- [Lambda Serverless](#lambda-serverless)
+- [CloudFormation](#cloudformation)
+- [Other services](#other-services)
 - [Terraform](#terraform)
 - [References](#references)
 
@@ -1000,6 +1005,130 @@ _Note_: Take care with the effimer ports
 ### VPC Endpoints
 
 An endpoint is a connection between a VPC and a AWS service. This is a good approach to allow secure connections without use internet network.
+
+## SQS and SNS
+Simple Queue Service is a Queue solution by AWS. To create a queue, go to SQS and click on `create queue`:
+
+![image](images/sqs0.png)
+
+We can choose a Standard or a Fifo. Fifo try to garantee an order into time window. We give a name. The visibility timeout is the time that the message on the queue disapear waiting the consume:
+
+![image](images/sqs1.png)
+
+We can configure a Dead letter queue if the `Maximium recieves` ends:
+
+![image](images/sqs2.png)
+
+### SNS
+
+It is a topic or subscribe solution. We can create a topic from SNS page:
+
+![image](images/sqs3.png)
+
+We can create a FIFO or Standard. If we choose FIFO, only fifo queues can be subscribed:
+
+![image](images/sqs4.png)
+
+To subscribe SQS to SNS we need to do from SQS, because if we do from SNS, we will need to add permissions to SQS to publish. Doing from SQS, the permissions are given automatically:
+
+![image](images/sqs5.png)
+
+Choose the topic:
+
+![image](images/sqs6.png)
+
+We can view the subscription details:
+
+![image](images/sqs7.png)
+
+If we want receive the same message, we need to change the option `raw message delivery`. If we don't change this option, the message will have a wrapper information from SNS.
+
+![image](images/sqs8.png)
+
+## Kinesis
+It is an streaming data solution. We have three different types:
+
+- Streams: Save data from 24 hours to 7 days.
+- Firehose: Doesn't save data
+- Analytics: Stadistics for others two kinesis types.
+
+Today, exists an other service called Amazon MSK (Managed Streaming for Kafka).
+
+## Lambda Serverless
+
+AWS Lambda is a serverless compute service that lets you run code without provisioning or managing servers, creating workload-aware cluster scaling logic, maintaining event integrations, or managing runtimes.
+
+To create a Lambda function, we need to got to lambda, menu functions, and click on `create function`:
+
+![image](images/lambda1.png)
+
+We have some options. We can give a name, select a language and select permissions options:
+
+![image](images/lambda2.png)
+
+Then, we add a trigger clicking on `Add trigger`:
+
+![image](images/lambda3.png)
+
+Select an API gateway, select as `HTTP` and security `Open`:
+
+![image](images/lambda4.png)
+
+Now, we can add a python example and deploy it:
+
+![image](images/lambda5.png)
+
+After this, we can use the API Gateway url to access.
+
+## CloudFormation
+
+CloudFormation gives us an easy way to model a collection of related AWS and third-party resources, provision them quickly and consistently, and manage them throughout their lifecycles, by treating infrastructure as code. It uses Yaml or Json.
+
+A yaml sample: 
+```yaml
+---
+Resources:
+  WebServers: ## Group - A free name
+    Type: AWS::EC2::Instance 
+    Properties:
+      AvailabilityZone: us-east-1a
+      ImageId: ami-0c2b8ca1dad447f8a 
+      InstanceType: t2.micro
+
+  MyBuckets:
+    Type: AWS::S3::Instance
+    Properties:
+      AccessControl: PublicRead
+      BucketName: "iunda-cloudformation-sample-bucket"
+```
+
+We need to go to cloudformation page and create an stack:
+
+![image](images/cloudformation1.png)
+
+Upload a file:
+
+![image](images/cloudformation2.png)
+
+Choose a name:
+
+![image](images/cloudformation3.png)
+
+After pass some steps and confirmations and the stack is ready:
+
+![image](images/cloudformation4.png)
+
+To remove stack (and the created resources), click on delete:
+
+![image](images/cloudformation5.png)
+
+
+## Other services
+A little note about other services:
+
+- SWF: Simple Workflow service is a solution to create workflows with automation and human interaction.
+- Elastic Transcoder: It is a solution to transcode files enter formats, for example transform a full HD video in MP3, or in 640 mp4.
+- Coginto: it is a web identity federation. It is an authentication and an authorization solution.
 
 ## Terraform
 
