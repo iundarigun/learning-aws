@@ -14,6 +14,7 @@ This readme contains information about my studies in AWS. The menu:
 - [VPC](#vpc)
 - [SQS and SNS](#sqs-and-sns)
 - [Kinesis](#kinesis)
+- [API Gateway](#api-gateway)
 - [Lambda Serverless](#lambda-serverless)
 - [CloudFormation](#cloudformation)
 - [Other services](#other-services)
@@ -1053,6 +1054,93 @@ It is an streaming data solution. We have three different types:
 - Analytics: Stadistics for others two kinesis types.
 
 Today, exists an other service called Amazon MSK (Managed Streaming for Kafka).
+
+## API Gateway
+
+Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale.
+
+To create a new gateway, we can access to API Gateway and click `Create API`:
+
+![image](images/apigateway0.png)
+
+Choose Rest API, and build: 
+
+![image](images/apigateway1.png)
+
+We can import a json Open API:
+
+![image](images/apigateway2.png)
+
+To test, we can click on test of the method:
+
+![image](images/apigateway3.png)
+
+We can create a new method manually, instead of importing swagger:
+
+![image](images/apigateway4.png)
+
+We configure the service, the availability zone and the others things:
+
+![image](images/apigateway5.png)
+
+We can add url parameters:
+
+![image](images/apigateway6.png)
+
+And we can configure response on `Integration Response`:
+
+![image](images/apigateway7.png)
+
+To deploy, we can click on actions, on `Deploy API` menu item:
+
+![image](images/apigateway8.png)
+
+Select new stage and give a name:
+
+![image](images/apigateway9.png)
+
+### Security
+
+To add security on API Gateway, we can use an `API Key`:
+
+![image](images/apigateway10.png)
+
+Select a name:
+
+![image](images/apigateway11.png)
+
+The `API Key` is generated:
+
+![image](images/apigateway12.png)
+
+To use it, we need to create a `Usage Plan` to vinculate it:
+
+![image](images/apigateway13.png)
+
+Select a name, the throtlling, Quota and click `Next`:
+
+![image](images/apigateway14.png)
+
+Add the API and the stage:
+
+![image](images/apigateway15.png)
+
+And, at last, select the API Key created before: 
+
+![image](images/apigateway16.png)
+
+To add this security to an endpoint, we go to the request:
+
+![image](images/apigateway17.png)
+
+And select `Api key Required`:
+
+![image](images/apigateway18.png)
+
+Now, after deploy, we will need to use a header `x-api-key` with the key value:
+
+![image](images/apigateway19.png)
+
 
 ## Lambda Serverless
 
